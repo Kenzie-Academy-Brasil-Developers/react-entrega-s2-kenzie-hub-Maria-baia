@@ -1,7 +1,6 @@
 import {useForm} from "react-hook-form"
 import * as yup from 'yup'
 import {yupResolver} from "@hookform/resolvers/yup"
-import { useState } from "react"
 import { useHistory } from "react-router"
 import axios from "axios"
 import {ToastContainer, toast} from 'react-toastify'
@@ -17,20 +16,17 @@ function Login(){
         resolver: yupResolver(schema)
     })
 
-    const [token, setToken] = useState([])
-
     const onSubmitFunction = (userdata) => {
         axios.post('https://kenziehub.herokuapp.com/sessions', userdata)
-        .then((response) => setData(response.data.user.id))
+        .then((response) => {
+            localStorage.clear();
+            localStorage.setItem("token", JSON.stringify(response.data.token));
+            history.push('/profile');
+        })
         .catch(() => toast.error("E-mail ou senha incorretos."))
     }
 
-    const [data, setData] = useState([])
     const history = useHistory()
-
-    if(data.length > 0){
-        history.push(`${data}`)
-    }
 
     return(
         <div>

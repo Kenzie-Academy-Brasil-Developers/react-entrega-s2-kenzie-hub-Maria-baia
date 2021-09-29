@@ -16,7 +16,7 @@ function Routes(){
             <Route exact path="/login">
                 <Login/>
             </Route>
-            <Route exact path="/:id">
+            <Route exact path="/profile">
                 <Profile/>
             </Route>
         </Switch>

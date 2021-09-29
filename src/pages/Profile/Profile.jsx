@@ -10,14 +10,19 @@ import 'react-toastify/dist/ReactToastify.css'
 
 function Profile(){
     const params = useParams()
-    const [url, setUrl] = useState([])
+    const [data, setData] = useState()
+    const [token, setToken] = useState(() => {
+        const localToken = localStorage.getItem("token") || "";
+        return JSON.parse(localToken);
+    })
 
     useEffect(() => {
-        fetch(`https://kenziehub.herokuapp.com/users/${params.id}`)
-        .then(response => response.json())
-        .then(data => setUrl([{name:data.name, courseModule:data.course_module, bio:data.bio, contact:data.contact, techs:data.techs}]))
-        .catch(error => console.log(error))
-    },[params.id])
+        axios.get("https://kenziehub.herokuapp.com/profile",{
+            headers: {Authorization: `Bearer ${token}`},
+        })
+        .then(response => setData(response.data))
+        .catch((err) => console.log(err))
+    })
 
     const schema = yup.object().shape({
         title: yup.string().required("Campo obrigatório!"),
@@ -28,10 +33,11 @@ function Profile(){
         resolver: yupResolver(schema)
     })
 
-    const onSubmitFunction = (data) => {
-        axios.post('https://kenziehub.herokuapp.com/users/techs', data)
+    const onSubmitFunction = (newTech) => {
+        axios.post('https://kenziehub.herokuapp.com/users/techs', newTech,{
+            headers: {Authorization: `Bearer ${token}`},
+        })
         .then(() => toast.success("Tecnologia adicionada!"))
-        .then(() => history.push(`${params.id}`))
         .catch(() => toast.error("Erro na adição da tecnologia."))
     }
 
@@ -39,20 +45,21 @@ function Profile(){
 
  return(
      <div>
-        {url.map((param) => (
             <div>
-                <h1>Nome: {param.name}</h1>
-                <p>Módulo do curso: {param.courseModule}</p>
-                <p>Bio: {param.bio}</p>
-                <p>Contato: {param.contact}</p>
-                <ul>Tecnologias: {param.techs.map((tech, index) => (
-                    <li key={index}>
-                    <h4>{tech.title}</h4>
-                    <p>{tech.status}</p>
-                    </li>
-                ))}</ul>
+                <h1 className="name">Nome: {data?.name}</h1>
+                <div className="caract">
+                    <h2>Módulo do curso: {data?.course_module}</h2>
+                    <h2>Bio: {data?.bio}</h2>
+                    <h2>Contato: {data?.contact}</h2>
+                    <h2>Tecnologias:</h2>
+                    <ul>{data?.techs.map((tech, index) => (
+                        <li key={index}>
+                        <h4>{tech.title}</h4>
+                        <p>{tech.status}</p>
+                        </li>
+                    ))}</ul>
+                </div>
             </div>
-        ))}
         <form onSubmit={handleSubmit(onSubmitFunction)}>
             <h2>Adicione novas tecnologias preenchendo o formulário abaixo: </h2>
             <input placeholder='Título' {...register("title")}/>

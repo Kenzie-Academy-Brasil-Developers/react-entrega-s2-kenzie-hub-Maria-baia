@@ -69,9 +69,19 @@ export default createGlobalStyle`
         color: #e07a5f;
     }
 
-    p, ul {
+    h2, ul {
         margin-bottom: 5px;
         color: #0077b6;
         list-style: none;
+    }
+
+    .name {
+        color: #0096c7;
+    }
+    
+    ul {
+        display: flex;
+        flex-direction: row;
+        column-gap: 20px;
     }
 `;
