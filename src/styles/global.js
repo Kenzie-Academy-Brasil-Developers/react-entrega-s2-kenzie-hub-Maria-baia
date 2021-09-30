@@ -83,5 +83,6 @@ export default createGlobalStyle`
         display: flex;
         flex-direction: row;
         column-gap: 20px;
+        flex-wrap: wrap;
     }
 `;
