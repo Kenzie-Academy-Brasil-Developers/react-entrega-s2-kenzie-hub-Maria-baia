@@ -7,6 +7,7 @@ import { useHistory } from "react-router"
 import axios from "axios"
 import {ToastContainer, toast} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import FormTechs from "../FormTechs/FormTechs"
 
 function Profile(){
     const params = useParams()
@@ -43,6 +44,14 @@ function Profile(){
 
     const history = useHistory()
 
+    const deleteTech = (id) => {
+        axios.delete(`https://kenziehub.herokuapp.com/users/techs/${id}`,{
+            headers: {Authorization: `Bearer ${token}`},
+        })
+        .then(() => toast.success("Tecnologia deletada!"))
+        .catch(() => toast.error("Erro."))
+    }
+
  return(
      <div>
             <div>
@@ -52,23 +61,18 @@ function Profile(){
                     <h2>Bio: {data?.bio}</h2>
                     <h2>Contato: {data?.contact}</h2>
                     <h2>Tecnologias:</h2>
-                    <ul>{data?.techs.map((tech, index) => (
-                        <li key={index}>
+                    <ul>{data?.techs.map((tech) => (
+                        <li key={tech.id}>
                         <h4>{tech.title}</h4>
                         <p>{tech.status}</p>
+                        <button onClick={() => deleteTech(tech.id)}>Deletar</button>
                         </li>
                     ))}</ul>
                 </div>
             </div>
-        <form onSubmit={handleSubmit(onSubmitFunction)}>
-            <h2>Adicione novas tecnologias preenchendo o formulário abaixo: </h2>
-            <input placeholder='Título' {...register("title")}/>
-            <span>{errors.title?.message}</span>
-            <input placeholder='Status' {...register("status")}/>
-            <span>{errors.status?.message}</span>
-            <button>ADICIONAR</button>
+            <FormTechs handleSubmit={handleSubmit} onSubmitFunction={onSubmitFunction} 
+            register={register} errors={errors}/>
             <ToastContainer/>
-        </form>
      </div>
  )
 }
